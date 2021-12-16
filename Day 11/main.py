@@ -1,6 +1,3 @@
-from os import O_TEMPORARY
-
-
 with open('Day 11/input.txt') as f:
     octopus_timers = f.read().strip().split('\n')
 
