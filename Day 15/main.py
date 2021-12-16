@@ -1,4 +1,3 @@
-import heapq
 with open('Day 15/input.txt') as f:
     risk_levels = [[int(risk) for risk in list(line.strip())] for line in f.readlines()]
 
@@ -39,11 +38,44 @@ def create_graph(risk_levels):
 
     return graph
 
+def heappop(heap):
+    val = heap[0]
+    # put largest element on top then sift it down
+    largest = heap.pop()
+    size = len(heap)
+    if size == 0: return val # only one value
+
+    heap[0] = largest
+    idx = 0
+    while True:
+        child_1 = 2 * idx + 1
+        child_2 = 2 * idx + 2
+        if child_1 >= size: return val # children are past the end of the array - they don't exist
+
+        smallest_child = child_2 if child_2 < size and heap[child_2].distance < heap[child_1].distance else child_1
+        if heap[idx].distance <= heap[smallest_child].distance: return val # we are in the right order
+        # otherwise we have to swap
+        heap[smallest_child], heap[idx] = heap[idx], heap[smallest_child]
+        idx = smallest_child
+
+def heappush(heap, ele):
+    idx = len(heap)
+    heap.append(ele)
+    while True:
+        if idx == 0: return # we've pushed onto an empty heap or we are the largest element
+        parent = (idx - 1) // 2
+
+        if heap[idx].distance >= heap[parent].distance: return # we are in the right order
+        # otherwise we have to swap
+        heap[parent], heap[idx] = heap[idx], heap[parent]
+        idx = parent
+
+
 def dijkstra(graph, dim):
     searched = set()
     min_dist = [graph[0]]
     while len(min_dist):
-        cur_node = heapq.heappop(min_dist)
+        cur_node = heappop(min_dist)
         if cur_node.position in searched:
             continue 
     
@@ -56,7 +88,7 @@ def dijkstra(graph, dim):
             if cur_node.distance + neighbor_node.weight < neighbor_node.distance:
                 new_node = Node(neighbor_node.position, neighbor_node.weight, cur_node.distance + neighbor_node.weight)
                 new_node.add_neighbors(neighbor_node)
-                heapq.heappush(min_dist, new_node)
+                heappush(min_dist, new_node)
 
 graph = create_graph(risk_levels)
 print(dijkstra(graph, len(risk_levels)))
