@@ -112,4 +112,4 @@ while states:
         # we happen to get lucky with our input and end up with only 1 solution, which means it must be the cheapest
         if is_goal(next): 
             print(next_energy)
-            states = []
+            
